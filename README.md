@@ -2,7 +2,7 @@
 
 ## OmniRecords Keeper
 
-Here begins the creation of a new database manager for my files. Successor of "OMNIRECORDS" (name passed to the actual database) which was written in Powershell.
+Here begins the creation of a new database manager for my files. Successor of "OMNIRECORDS" (name passed to the actual database) which was written in PowerShell.
 
 To use sqlite3 package from Python.
 
