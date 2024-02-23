@@ -2,7 +2,6 @@ from configparser                import ConfigParser
 from logging                     import info, exception, error
 from typing                      import Self, TypeVar, List
 from os                          import system
-from prettytable                 import PrettyTable # Does rich have one already?
 from presentation.ConnectCommand import ConnectCommand
 from logic.Receiver              import Receiver
 from cutie                       import select
