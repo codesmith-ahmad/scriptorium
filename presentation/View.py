@@ -1,10 +1,11 @@
 from configparser                import ConfigParser
 from logging                     import info, exception, error
-from typing                      import Self, TypeVar
+from typing                      import Self, TypeVar, List
 from os                          import system
 from prettytable                 import PrettyTable # Does rich have one already?
 from presentation.ConnectCommand import ConnectCommand
 from logic.Receiver              import Receiver
+from cutie                       import select
 
 class View:
     
@@ -14,53 +15,49 @@ class View:
     Report = TypeVar("Report")
 
     # constants declaration
+    DB_OPTIONS = {}
     SETTINGS : SectionProxy = None
     BANNER : str = None
     MENU : str = None
     
     @classmethod
-    def start(cls:Self) -> None:
-        cls.initialize()
-        db = cls.select_database()
-        command = ConnectCommand(connect_to=db)
-        report =  Receiver.execute(command)
-        print(report)
-
-    @classmethod
     def initialize(cls) -> None:
-        cls.load_settings()
+        config = ConfigParser(interpolation=None)
+        config.read('config.ini')
+        for k,v in config['Databases'].items():
+            cls.DB_OPTIONS[k] = v
+        cls.SETTINGS = config['ViewSettings']
         cls.load_banner()
         cls.load_menu()
     
     @classmethod
-    def select_database(cls) -> str:
-        #todo cutie menu here
-        print(
-    """
-    <cutie menu>
-        > OmniRecords
-        dummy
-    """
-        )
-        return "omni"
+    def start(cls:Self) -> None:
+        cls.initialize()
+        print("Select database:\n")
+        list_of_options = list(cls.DB_OPTIONS.keys())
+        idx = select(list_of_options,deselected_prefix="   ",selected_prefix=" \033[92m>\033[0m ")
+        selected_option = list_of_options[idx]
+        selected_database = cls.DB_OPTIONS[selected_option]
+        print("Connect to " + selected_database)
+        command = ConnectCommand(connect_to=selected_database)
+        report =  Receiver.execute(command)
+        print(report)
+        cls.main_loop()
     
     @classmethod
     def load_settings(cls) -> None:
-        info("Loading settings")
         config = ConfigParser(interpolation=None)
         config.read('config.ini')
         cls.SETTINGS = config['ViewSettings']
 
     @classmethod
     def load_banner(cls):
-        info("Loading banner")
         banner = open(cls.SETTINGS['banner']).read()
         color = cls.SETTINGS['banner_color']
         cls.BANNER = f"\033[{color}m{banner}\033[0m"
     
     @classmethod
     def load_menu(cls):
-        info("Loading menu")
         menu = open(cls.SETTINGS['menu']).read()
         color = cls.SETTINGS['menu_color']
         cls.MENU = f"\033[{color}m{menu}\033[0m"
@@ -74,6 +71,11 @@ class View:
     def menu(cls):
         """Prints the menu"""
         print(cls.MENU)
+        
+    @classmethod
+    def main_loop(cls):
+        cls.banner()
+        cls.menu()
     
     # @classmethod
     # def process(cls, raw_input):
