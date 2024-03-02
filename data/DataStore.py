@@ -1,11 +1,6 @@
-# Code by Ahmad Al-Jabbouri
 
-import configparser
-from logging import info, exception, error, debug
-import os
-from typing import *
-import pandas as pd
-from model.Otolith import Otolith
+from sqli
+from configparser import ConfigParser
 
 class DataStore():
     """

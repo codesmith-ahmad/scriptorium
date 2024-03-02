@@ -1,17 +1,12 @@
 from configparser                import ConfigParser
 from logging                     import info, exception, error
-from typing                      import Self, TypeVar, List
+from utils.TypeLibrary           import SectionProxy, Self
 from os                          import system
 from presentation.ConnectCommand import ConnectCommand
 from logic.Receiver              import Receiver
 from cutie                       import select
 
 class View:
-    
-    # type declaration
-    SectionProxy = TypeVar("SectionProxy")
-    Command = TypeVar("Command")
-    Report = TypeVar("Report")
 
     # constants declaration
     DB_OPTIONS = {}
@@ -21,6 +16,7 @@ class View:
     
     @classmethod
     def initialize(cls) -> None:
+        info("Intializing View (loading settings)")
         config = ConfigParser(interpolation=None)
         config.read('config.ini')
         for k,v in config['Databases'].items():
@@ -39,7 +35,7 @@ class View:
         selected_database = cls.DB_OPTIONS[selected_option]
         print("Connect to " + selected_database)
         command = ConnectCommand(connect_to=selected_database)
-        report =  Receiver.execute(command)
+        report = Receiver.execute(command)
         print(report)
         cls.main_loop()
     
@@ -51,12 +47,14 @@ class View:
 
     @classmethod
     def load_banner(cls):
+        info("loading banner")
         banner = open(cls.SETTINGS['banner']).read()
         color = cls.SETTINGS['banner_color']
         cls.BANNER = f"\033[{color}m{banner}\033[0m"
     
     @classmethod
     def load_menu(cls):
+        info("loading menu")
         menu = open(cls.SETTINGS['menu']).read()
         color = cls.SETTINGS['menu_color']
         cls.MENU = f"\033[{color}m{menu}\033[0m"

@@ -1,15 +1,11 @@
 from logging import info
-from typing import TypeVar
+from utils import TypeLibrary
 # from data.DataStore import DataStore
 from presentation.Command import Command
 from presentation.ConnectCommand import ConnectCommand
 from logic.Report import Report
 
 class Receiver:
-    
-    Command = TypeVar("Command")
-    ConnectCommand = TypeVar("ConnectCommand")
-    Report = TypeVar("Report")
 
     @classmethod
     def execute(cls, command: Command) -> Report:
