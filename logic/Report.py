@@ -1,8 +1,12 @@
-from abc import ABC, abstractmethod
 
 class Report:
-    def __init__(self, success: bool = False) -> None:
-        self.success : bool = success
+    def __init__(self):
+        pass
         
     def __str__(self) -> str:
-        return f"Report[sucess={self.success}]"
+        attributes = vars(self)  # or self.__dict__ or dir(self)
+        s = ''
+        s += "Attributes of " + self.__class__.__name__ + "\n"
+        for attribute, value in attributes.items():
+            s += f"{attribute}: {value}\n"
+        return s

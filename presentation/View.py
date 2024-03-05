@@ -1,10 +1,10 @@
-from configparser                import ConfigParser
-from logging                     import info, exception, error
-from myutils.TypeLibrary         import SectionProxy
-from os                          import system
-from presentation.Command        import Command
-from logic.Receiver              import Receiver
-from cutie                       import select
+from configparser           import ConfigParser
+from logging                import info, exception, error
+from myutils.TypeLibrary    import SectionProxy
+from os                     import system
+from presentation.Command   import Command
+from logic.Receiver         import Receiver
+from cutie                  import select
 
 class View:
 
@@ -36,7 +36,9 @@ class View:
         command = Command(Command.Type.CONNECTION)
         command.connect_to = selected_database
         report = Receiver.execute(command)
-        print(report)
+        info(f"""
+Success! Connected to SQLite version {report.sqlite_version}
+Tables: {report.table_list}""")
         cls.main_loop()       
     
     @classmethod

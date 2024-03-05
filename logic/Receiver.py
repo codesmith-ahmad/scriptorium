@@ -1,4 +1,5 @@
 from logging                import info
+from data.SQLiteOperator    import SQLiteOperator
 from presentation.Command   import Command
 from logic.Report           import Report
 
@@ -18,9 +19,16 @@ class Receiver:
             case Command.Type.DELETION:
                 return cls.execute_deletion(command)
     
+    @classmethod
     def execute_connection(cls, command : Command) -> Report:
         """Send connection instructions to database"""
-        pass
+        SQLiteOperator.initialize(command.connect_to)
+        report = SQLiteOperator.test_connection()
+        tables = []
+        for tpl in report.table_list:
+            tables += [tpl[0]]
+        report.table_list = tables
+        return report
     
     def execute_selection(cls) -> Report:
         raise NotImplementedError

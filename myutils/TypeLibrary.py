@@ -4,4 +4,5 @@ SectionProxy = TypeVar("SectionProxy")
 Report = TypeVar("Report")
 Command = TypeVar("Command")
 CommandType = TypeVar("CommandType")
-# Add more types
+Connection = TypeVar("Connection")
+Cursor = TypeVar("Cursor")
