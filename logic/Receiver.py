@@ -1,18 +1,39 @@
-from logging import info
-from utils import TypeLibrary
-# from data.DataStore import DataStore
-from presentation.Command import Command
-from presentation.ConnectCommand import ConnectCommand
-from logic.Report import Report
+from logging                import info
+from presentation.Command   import Command
+from logic.Report           import Report
 
 class Receiver:
 
     @classmethod
-    def execute(cls, command: Command) -> Report:
-        report = Report()
-        if isinstance(command,ConnectCommand):
-            report = Report(success=True)
-        return report
+    def execute(cls, command : Command) -> Report:
+        match command.command_type:
+            case Command.Type.CONNECTION:
+                return cls.execute_connection(command)
+            case Command.Type.SELECTION:
+                return cls.execute_selection(command)
+            case Command.Type.INSERTION:
+                return cls.execute_insertion(command)
+            case Command.Type.ALTERATION:
+                return cls.execute_alteration(command)
+            case Command.Type.DELETION:
+                return cls.execute_deletion(command)
+    
+    def execute_connection(cls, command : Command) -> Report:
+        """Send connection instructions to database"""
+        pass
+    
+    def execute_selection(cls) -> Report:
+        raise NotImplementedError
+    
+    def execute_insertion(cls) -> Report:
+        raise NotImplementedError
+    
+    def execute_alteration(cls) -> Report:
+        raise NotImplementedError
+    
+    def execute_deletion(cls) -> Report:
+        raise NotImplementedError
+    
         # try:
         #     action = action_set.get("action").upper()
         #     index = action_set.get("arg")

@@ -1,8 +1,8 @@
 from configparser                import ConfigParser
 from logging                     import info, exception, error
-from utils.TypeLibrary           import SectionProxy, Self
+from myutils.TypeLibrary         import SectionProxy
 from os                          import system
-from presentation.ConnectCommand import ConnectCommand
+from presentation.Command        import Command
 from logic.Receiver              import Receiver
 from cutie                       import select
 
@@ -26,18 +26,18 @@ class View:
         cls.load_menu()
     
     @classmethod
-    def start(cls:Self) -> None:
+    def start(cls) -> None:
         cls.initialize()
         print("Select database:\n")
         list_of_options = list(cls.DB_OPTIONS.keys())
         idx = select(list_of_options,deselected_prefix="   ",selected_prefix=" \033[92m>\033[0m ")
         selected_option = list_of_options[idx]
         selected_database = cls.DB_OPTIONS[selected_option]
-        print("Connect to " + selected_database)
-        command = ConnectCommand(connect_to=selected_database)
+        command = Command(Command.Type.CONNECTION)
+        command.connect_to = selected_database
         report = Receiver.execute(command)
         print(report)
-        cls.main_loop()
+        cls.main_loop()       
     
     @classmethod
     def load_settings(cls) -> None:

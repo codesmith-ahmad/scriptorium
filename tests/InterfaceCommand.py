@@ -1,10 +1,15 @@
-from presentation.Command import Command
+from abc import ABC, abstractmethod
 
-class ConnectCommand(Command):
-    def __init__(self,connect_to: str) -> None:
-        super().__init__()
-        self.connect_to: str = connect_to
-
+# Command interface
+class InterfaceCommand(ABC):
+    """<<interface>>"""
+    def __init__(self) -> None:
+        pass
+    
+    # @abstractmethod
+    # def execute(self):
+    #     pass
+    
 """
 HOW TO USE INTERFACES:
 

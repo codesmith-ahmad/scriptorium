@@ -1,6 +1,5 @@
 
-from sqli
-from configparser import ConfigParser
+# from sqlite3 import
 
 class DataStore():
     """
@@ -14,23 +13,23 @@ class DataStore():
     - dataframe (pd.DataFrame): The DataFrame containing the data.
     """
 
-    CURRENT_PATH: str = os.getcwd()
+    # CURRENT_PATH: str = os.getcwd()
     DATA_SOURCE: str = None
-    DATA_FIELDS: List[str] = None  # aliases for fields
-    MAX_ROWS: int = 100
-    dataframe: pd.DataFrame = None
+    # DATA_FIELDS: List[str] = None  # aliases for fields
+    # MAX_ROWS: int = 100
+    # dataframe: pd.DataFrame = None
 
-    @classmethod
-    def load_dataframe(cls) -> None:
-        """
-        Load DataFrame from the CSV file.
-        """
-        info("Loading dataframe...")
-        if cls.DATA_SOURCE is None:
-            cls.connect_database()
-        pd.options.display.max_rows = cls.MAX_ROWS  # Will not display more than 100 records
-        cls.dataframe = pd.read_csv(cls.DATA_SOURCE)
-        cls.DATA_FIELDS = list(cls.dataframe.columns)
+    # @classmethod
+    # def load_dataframe(cls) -> None:
+    #     """
+    #     Load DataFrame from the CSV file.
+    #     """
+    #     info("Loading dataframe...")
+    #     if cls.DATA_SOURCE is None:
+    #         cls.connect_database()
+    #     pd.options.display.max_rows = cls.MAX_ROWS  # Will not display more than 100 records
+    #     cls.dataframe = pd.read_csv(cls.DATA_SOURCE)
+    #     cls.DATA_FIELDS = list(cls.dataframe.columns)
 
     @classmethod
     def connect_database(cls) -> None:

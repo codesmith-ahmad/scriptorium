@@ -1,7 +1,7 @@
-from typing import TypeVar, Self
+from typing import TypeVar
 
 SectionProxy = TypeVar("SectionProxy")
 Report = TypeVar("Report")
 Command = TypeVar("Command")
-ConnectCommand = TypeVar("ConnectCommand")
-# Add more commands
+CommandType = TypeVar("CommandType")
+# Add more types
