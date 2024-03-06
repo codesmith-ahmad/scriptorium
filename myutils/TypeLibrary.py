@@ -1,9 +1,7 @@
-from typing import TypeVar
+from typing import TypeVar, Literal
 
 SectionProxy = TypeVar("SectionProxy")
-Report = TypeVar("Report")
-Command = TypeVar("Command")
-CommandType = TypeVar("CommandType")
-ReportType = TypeVar("ReportType")
 Connection = TypeVar("Connection")
 Cursor = TypeVar("Cursor")
+Command = TypeVar("Command")
+Report = TypeVar("Report")

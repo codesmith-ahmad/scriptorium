@@ -1,8 +1,10 @@
 
 from sqlite3 import connect as connect_to
-from logic.Report import Report
+from shared.Report import Report
 from myutils.TypeLibrary import Connection, Cursor
 from logging import info, exception, debug
+from shared.SelectionReport import SelectionReport
+from shared.ConnectionReport import ConnectionReport
 
 class SQLiteOperator():
 
@@ -18,11 +20,11 @@ class SQLiteOperator():
         info("Connected to " + data_source)
     
     @classmethod    
-    def test_connection(cls) -> Report:
-        r = Report(Report.Type.CONNECTION)
+    def test_connection(cls) -> ConnectionReport:
+        r = ConnectionReport()
         c = cls.cursor
         r.sqlite_version = c.execute("SELECT sqlite_version()").fetchone()[0]
-        r.table_list = c.execute(r"""
+        r.list_of_tables = c.execute(r"""
                                SELECT name FROM sqlite_master
                                WHERE
                                type = 'table' AND
@@ -34,29 +36,29 @@ class SQLiteOperator():
     @classmethod
     def select(cls, table:str, columns:list[str], filters:list[str] = None, ordering_terms:str = None) -> Report:
         """Filters are valid SQL conditions without the WHERE"""
-        try:
-            report = Report(Report.Type.SELECTION)
+        try:            
+            structure_query = f"SELECT name,type FROM pragma_table_info('{table}');"
+            data_query = f""
             
             if len(columns) == 1:
-                query = f"SELECT {columns[0]} from {table}"
+                data_query += f"SELECT {columns[0]} from {table}"
             else:
-                query = f"SELECT {', '.join(columns)} FROM {table}"
+                data_query += f"SELECT {', '.join(columns)} FROM {table}"
 
             # Add WHERE clause if filters are provided
             if filters:
-                query += f" WHERE {' AND '.join(filters)}"
+                data_query += f" WHERE {' AND '.join(filters)}"
 
             # Add ORDER BY clause if ordering_terms are provided
             if ordering_terms:
-                query += f" ORDER BY {ordering_terms}"
+                data_query += f" ORDER BY {ordering_terms}"
 
-            # Execute the query
-            cls.cursor.execute(query)
-
-            # Fetch the results
-            results = cls.cursor.fetchall()
-
-            report.results = results
+            # Execute queries
+            report = SelectionReport(
+                table=table,
+                table_info=(cls.cursor.execute(structure_query)).fetchall(),
+                query_results=(cls.cursor.execute(data_query)).fetchall()
+            )
 
         except Exception as e:
             # Handle exceptions

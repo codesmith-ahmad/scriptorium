@@ -1,11 +1,20 @@
-from configparser           import ConfigParser
-from logging                import info, exception, error
-from logic.Report import Report
-from myutils.TypeLibrary    import SectionProxy, ReportType
-from os                     import system
-from presentation.Command   import Command
-from logic.Receiver         import Receiver
-from cutie                  import select
+from configparser             import ConfigParser
+from logging                  import info, exception, error
+from shared.Command           import Command
+from shared.ConnectionCommand import ConnectionCommand
+from shared.SelectionCommand  import SelectionCommand
+from shared.Report            import Report
+from shared.ConnectionReport  import ConnectionReport
+from shared.Operation         import Operation
+from myutils.TypeLibrary      import SectionProxy
+from logic.Receiver           import Receiver
+from cutie                    import select
+from os                       import system
+from shared.SelectionReport import SelectionReport
+from prettytable import PrettyTable
+from prettytable import SINGLE_BORDER
+from prettytable import MARKDOWN
+from prettytable.colortable import ColorTable
 
 class View:
 
@@ -36,8 +45,7 @@ class View:
         idx = select(list_of_options,deselected_prefix="   ",selected_prefix=" \033[92m>\033[0m ")
         selected_option = list_of_options[idx]
         selected_database = cls.DB_OPTIONS[selected_option]
-        command = Command(Command.Type.CONNECTION)
-        command.connect_to = selected_database
+        command = ConnectionCommand(selected_database)
         report = Receiver.execute(command)
         cls.consume(report)
         cls.main_loop()       
@@ -75,12 +83,14 @@ class View:
     @classmethod
     def main_loop(cls):
         over = False
+        cls.banner()
+        cls.menu()
         while not over:
-            cls.banner()
-            cls.menu()
             user_input = input("> ")
             command = cls.process(user_input)
             report = Receiver.execute(command)
+            system('cls')
+            cls.banner()
             cls.consume(report)
     
     @classmethod
@@ -88,42 +98,53 @@ class View:
         """
         Take raw input, refine it, creates command
         """
-        command = Command()
         try:
             refined_input = raw_input.strip().lower().split()
-            if refined_input[0] in cls.tables:
-                command.command_type = Command.Type.SELECTION
-                command.target = refined_input[0]
-                command.columns = "all"
-                command.filters = None
-                command.ordering_terms = None #todo BAD, RETURN TO MAKING PREDEFINED REPORTS CAUSE I KEEP FORGETTING WHAT'S IN THEM
+            if cls.mode == 'SQL' and refined_input[0] in cls.tables:
+                command = SelectionCommand(
+                    target=refined_input[0],
+                    columns=['*']
+                    )
         except Exception as e:
             exception(f"ERROR: SEEK HELP ||| {e}")
         finally:
             return command
         
     @classmethod
-    def consume(cls, report : ReportType):
-        match report.report_type:
-            case Report.Type.CONNECTION:
-                return cls.read_connection_report(report)
-            case Report.Type.SELECTION:
-                return cls.read_selection_report(report)
-            case Report.Type.INSERTION:
-                return cls.read_insertion_report(report)
-            case Report.Type.ALTERATION:
-                return cls.read_alteration_report(report)
-            case Report.Type.DELETION:
-                return cls.read_deletion_report(report)
-            case "unknown":
+    def consume(cls, report : Report) -> Report:
+        match report.TYPE_OF_REPORT:
+            case Operation.CONNECTION:
+                return cls.consume_connection_report(report)
+            case Operation.SELECTION:
+                return cls.consume_selection_report(report)
+            case Operation.INSERTION:
+                return cls.consume_insertion_report(report)
+            case Operation.ALTERATION:
+                return cls.consume_alteration_report(report)
+            case Operation.DELETION:
+                return cls.consume_deletion_report(report)
+            case Operation.GENERIC:
                 exception("\033[31mUNKNOWN REPORT TYPE\033[0m")
                 raise ValueError
     
     @classmethod
-    def read_connection_report(cls,report) -> None:
-        cls.tables = report.table_list
+    def consume_connection_report(cls,report:ConnectionReport) -> None:
+        cls.tables = report.list_of_tables
         msg = f"Success! Connected to SQLite version {report.sqlite_version}"
         info(msg)
+        
+    @classmethod
+    def consume_selection_report(cls,report:SelectionReport) -> None:
+        table = report.table # string
+        columns = report.headers # list of strings
+        rows = report.query_results # list of list of strings and int
+ 
+        table = PrettyTable()
+        table.field_names = columns
+        table.add_rows(rows)
+        table.set_style(15)
+
+        print(table)
 
     @classmethod
     def __str__(cls):
