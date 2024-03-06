@@ -47,19 +47,16 @@ Here begins the creation of a new database CLI manager for my files. Successor o
 
 #### Control
 
-- *click* : this will be used to build the CLI engine
+None.
 
 #### Presentation
 
-- *PyTermGUI*: To turn the CLI into a TUI
 - *cutie* or *questionary*: Navigatable options menu
 - *rich* : this will be used to make the output attractive
-- *prettytable* : to output attractive tables, but how to handle conditional styles? See if otehr libraries does both
 
 ### TODO
 
 In order:
 
-- [ ] connect to database
 - [ ] encrypt / decrypt db file
 - [ ] basic CRUD operations

@@ -1,6 +1,7 @@
 from configparser           import ConfigParser
 from logging                import info, exception, error
-from myutils.TypeLibrary    import SectionProxy
+from logic.Report import Report
+from myutils.TypeLibrary    import SectionProxy, ReportType
 from os                     import system
 from presentation.Command   import Command
 from logic.Receiver         import Receiver
@@ -8,11 +9,13 @@ from cutie                  import select
 
 class View:
 
-    # constants declaration
     DB_OPTIONS = {}
     SETTINGS : SectionProxy = None
     BANNER : str = None
     MENU : str = None
+    
+    tables : list[str] = None
+    mode : str = 'SQL'
     
     @classmethod
     def initialize(cls) -> None:
@@ -36,9 +39,7 @@ class View:
         command = Command(Command.Type.CONNECTION)
         command.connect_to = selected_database
         report = Receiver.execute(command)
-        info(f"""
-Success! Connected to SQLite version {report.sqlite_version}
-Tables: {report.table_list}""")
+        cls.consume(report)
         cls.main_loop()       
     
     @classmethod
@@ -73,94 +74,60 @@ Tables: {report.table_list}""")
         
     @classmethod
     def main_loop(cls):
-        cls.banner()
-        cls.menu()
+        over = False
+        while not over:
+            cls.banner()
+            cls.menu()
+            user_input = input("> ")
+            command = cls.process(user_input)
+            report = Receiver.execute(command)
+            cls.consume(report)
     
-    # @classmethod
-    # def process(cls, raw_input):
-    #     """
-    #     Take raw input, refine it, and extract action and id where id could be null.
-    #     """
-    #     action_set = {  # TODO REPLACED BY COMMAND
-    #         "action": None,
-    #         "arg": None
-    #     }
-    #     try:
-    #         refined_input = raw_input.strip().lower().split()
-    #         action_set["action"] = refined_input[0]
-    #         action_set["arg"] = refined_input[1]
-    #     except IndexError:
-    #         if action_set["action"] is None:
-    #             error("\033[31mERROR: CANNOT BE EMPTY, SEEK HELP\033[0m")
-    #         else:
-    #             pass
-    #     except:
-    #         exception("ERROR: SEEK HELP")  # Send exception info to both file AND console
-    #     finally:
-    #         return action_set
+    @classmethod
+    def process(cls, raw_input) -> Command:
+        """
+        Take raw input, refine it, creates command
+        """
+        command = Command()
+        try:
+            refined_input = raw_input.strip().lower().split()
+            if refined_input[0] in cls.tables:
+                command.command_type = Command.Type.SELECTION
+                command.target = refined_input[0]
+                command.columns = "all"
+                command.filters = None
+                command.ordering_terms = None #todo BAD, RETURN TO MAKING PREDEFINED REPORTS CAUSE I KEEP FORGETTING WHAT'S IN THEM
+        except Exception as e:
+            exception(f"ERROR: SEEK HELP ||| {e}")
+        finally:
+            return command
+        
+    @classmethod
+    def consume(cls, report : ReportType):
+        match report.report_type:
+            case Report.Type.CONNECTION:
+                return cls.read_connection_report(report)
+            case Report.Type.SELECTION:
+                return cls.read_selection_report(report)
+            case Report.Type.INSERTION:
+                return cls.read_insertion_report(report)
+            case Report.Type.ALTERATION:
+                return cls.read_alteration_report(report)
+            case Report.Type.DELETION:
+                return cls.read_deletion_report(report)
+            case "unknown":
+                exception("\033[31mUNKNOWN REPORT TYPE\033[0m")
+                raise ValueError
     
-    # @classmethod
-    # def execute_action(cls, action_set):
-    #     """
-    #     Execute the action based on user input.
-    #     """
-    #     exit = False
-    #     try:
-    #         action = action_set.get("action")
-    #         match action:
-    #             case "exit":
-    #                 exit = True
-    #             case "help":
-    #                 print(cls.MENU_TEXT)
-    #             case "update":
-    #                 cls.prompt_update() 
-    #             case _:
-    #                 info(f"Executing action {action.upper()}...\n")
-    #                 display_info = FishService.execute_action(action_set)  # The only connection to FishService
-    #                 cls.execute(display_info)  # Either PrettyTable or string, both printable
-    #     except ValueError:
-    #         pass
-    #     except Exception as e:
-    #         exception("ERROR IN FishConsoleView.execute_action")
-    #     finally:
-    #         return exit
-    
-    # @classmethod
-    # def execute(cls, display_info: DisplayInfo):
-    #     """
-    #     Execute based on the display information.
-    #     """
-    #     if display_info.is_table:
-    #         pt = display_info.pretty_table
-    #         row_count = display_info.row_count
-    #         i = 0
-    #         while True:
-    #             print(pt.get_string(start=i, end=i + 10))
-    #             sign()
-    #             if i > row_count - 10:
-    #                 break
-    #             else:
-    #                 i += 10
+    @classmethod
+    def read_connection_report(cls,report) -> None:
+        cls.tables = report.table_list
+        msg = f"Success! Connected to SQLite version {report.sqlite_version}"
+        info(msg)
 
-    # @classmethod
-    # def prompt_update(cls):
-    #     """
-    #     Prompt the user for input to update data.
-    #     """
-    #     try:
-    #         index = input("Enter the ID to update: ")
-    #         column = input("Enter the column to update: ")
-    #         new_value = input("Enter the new value: ")
-
-    #         action_set = {"action": "update", "arg": index, "column": column, "new_value": new_value}
-    #         display_info = FishService.execute_action(action_set)
-    #         cls.execute(display_info)
-    #     except Exception as e:
-    #         exception("ERROR IN prompt_update")
-
-    # @classmethod
-    # def __str__(cls):
-    #     """
-    #     String representation of the class.
-    #     """
-    #     return f"{cls}"
+    @classmethod
+    def __str__(cls):
+        """
+        String representation of the class.
+        """
+        return f"{cls}"

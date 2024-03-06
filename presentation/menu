@@ -1,5 +1,22 @@
-   SELECT <id | *>
- > INSERT
-   UPDATE <id>
-   DELETE <id>
-   exit
+**** This is the menu ***
+SELECT TABLE OR EXECUTE SQL:
+   Example of usage:
+	> assignments
+	(switches mode from 'sql' to 'assignments' and displays table)
+	(from now on, any operation done now should relate to assignments)
+	(unless mode is switched back to 'sql')
+
+	> select <id>
+	(display one row)
+
+	> insert
+	(launch insert wizard/form/questionary, update db, update view)
+
+	> update <id>
+	(launches update menu, update db, update view)
+
+	> delete <id>
+	(update db, update view)
+
+	> add more commands au besoin
+****

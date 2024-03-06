@@ -19,7 +19,7 @@ class SQLiteOperator():
     
     @classmethod    
     def test_connection(cls) -> Report:
-        r = Report()
+        r = Report(Report.Type.CONNECTION)
         c = cls.cursor
         r.sqlite_version = c.execute("SELECT sqlite_version()").fetchone()[0]
         r.table_list = c.execute(r"""
@@ -30,26 +30,40 @@ class SQLiteOperator():
                                name NOT LIKE 'sqlite%';
                                """).fetchall()
         return r
-
+        
     @classmethod
-    def select_all(cls):
-        """
-        Execute SELECT_ALL operation.
-
-        Returns:
-        - Dict[int, Otolith]: A dictionary containing selected data.
-        """
+    def select(cls, table:str, columns:list[str], filters:list[str] = None, ordering_terms:str = None) -> Report:
+        """Filters are valid SQL conditions without the WHERE"""
         try:
-            info("Executing SELECT_ALL...")
-            if cls.dataframe is None:
-                cls.load_dataframe()
-            dataset = {}
-            for i in range(len(cls.dataframe.index)):
-                dataset[i] = cls.select(i)
-            return dataset
-        except Exception as e:
-            exception(e)
+            report = Report(Report.Type.SELECTION)
+            
+            if len(columns) == 1:
+                query = f"SELECT {columns[0]} from {table}"
+            else:
+                query = f"SELECT {', '.join(columns)} FROM {table}"
 
+            # Add WHERE clause if filters are provided
+            if filters:
+                query += f" WHERE {' AND '.join(filters)}"
+
+            # Add ORDER BY clause if ordering_terms are provided
+            if ordering_terms:
+                query += f" ORDER BY {ordering_terms}"
+
+            # Execute the query
+            cls.cursor.execute(query)
+
+            # Fetch the results
+            results = cls.cursor.fetchall()
+
+            report.results = results
+
+        except Exception as e:
+            # Handle exceptions
+            print(f"Error executing selection: {e}")
+        finally:
+            return report
+    
     @classmethod
     def update(cls, index: int, column: str, new_val) -> None:
         """

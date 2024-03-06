@@ -10,7 +10,7 @@ class Command():
         DELETION = 'D'
         TRANSACTION = 'T'
         
-    def __init__(self, command_type : CommandType):
+    def __init__(self, command_type : CommandType = "unknown"):
         self.command_type = command_type
         
     def reveal(self):
