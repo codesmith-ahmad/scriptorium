@@ -8,14 +8,14 @@ Here begins the creation of a new database CLI manager for my files. Successor o
 
 #### Responsabilities
 
-User creates input 
-~View~ (New name: <u>Screen</u>) generates **Command** (interprets what user wants) 
-View sends Command to ~Receiver~ (new name: <u>Control</u>) 
-Control sends **Instructions** to SQLiteOperator in the form of arguments 
-SQLiteOperator returns **Package** (Executed query as string, errors if any, table name as string, column names as list[str], rows as list[list]) 
-Control unpacks Package. And generates a **Report** logging all tranformations applied to the table. If a column requires special treatment, flag it and treat it.  
-Control sends Report to **Screen**  
-Screen places appropriate data from report into pre-defined areas, will use `__str__(self)` to print the screen   
+1. User creates input 
+2. ~View~ (New name: <u>Screen</u>) generates **Command** (interprets what user wants) 
+3. View sends Command to ~Receiver~ (new name: <u>Control</u>) 
+4. Control sends **Instructions** to SQLiteOperator in the form of arguments 
+5. SQLiteOperator returns **Package** (Executed query as string, errors if any, table name as string, column names as list[str], rows as list[list]) 
+6. Control unpacks Package. And generates a **Report** logging all tranformations applied to the table. If a column requires special treatment, flag it and treat it.  
+7. Control sends Report to **Screen**  
+8. Screen places appropriate data from report into pre-defined areas, will use `__str__(self)` to print the screen   
 
 (Screen -> Control) **Command**:
 - Operation: CONNECT, SELECT, INSERT, UPDATE, DELETE, TRANSACT add more when needed... (add to menu)
