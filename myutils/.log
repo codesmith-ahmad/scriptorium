@@ -1,5 +1,5 @@
-2024-03-08 11:37:54 [View.py:31] Intializing View (loading settings)
-2024-03-08 11:37:54 [View.py:61] loading banner
-2024-03-08 11:37:54 [View.py:68] loading menu
-2024-03-08 11:37:57 [SQLiteOperator.py:20] Connected to D:/OneDrive/DATA/nabi.db
-2024-03-08 11:37:57 [View.py:134] Success! Connected to SQLite version 3.43.1
+2024-03-08 11:58:11 [View.py:31] Intializing View (loading settings)
+2024-03-08 11:58:11 [View.py:61] loading banner
+2024-03-08 11:58:11 [View.py:68] loading menu
+2024-03-08 11:58:13 [SQLiteOperator.py:20] Connecting to D:/OneDrive/DATA/omnirecords.db...
+2024-03-08 11:58:13 [View.py:134] Success! Connected to SQLite version 3.43.1

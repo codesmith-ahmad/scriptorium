@@ -1,22 +1,14 @@
 **** This is the menu ***
+TODO
+	1. Decrypt database
+	2. Load database
+	3. Create local copy in D:/backup
+	4. Continue normally
+	5. ...
+	6. On exit, create local copy with timestamp
+	7. Close database
+	8. Encrypt database
 SELECT TABLE OR EXECUTE SQL:
    Example of usage:
 	> assignments
-	(switches mode from 'sql' to 'assignments' and displays table)
-	(from now on, any operation done now should relate to assignments)
-	(unless mode is switched back to 'sql')
-
-	> select <id>
-	(display one row)
-
-	> insert
-	(launch insert wizard/form/questionary, update db, update view)
-
-	> update <id>
-	(launches update menu, update db, update view)
-
-	> delete <id>
-	(update db, update view)
-
-	> add more commands au besoin
 ****
