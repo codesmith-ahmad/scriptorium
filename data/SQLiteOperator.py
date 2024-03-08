@@ -17,7 +17,7 @@ class SQLiteOperator():
         """Establish a connection to the SQLite database."""
         cls.connection = connect_to(data_source)
         cls.cursor = cls.connection.cursor()
-        info("Connected to " + data_source)
+        info(f"Connecting to {data_source}...")
     
     @classmethod    
     def test_connection(cls) -> ConnectionReport:
