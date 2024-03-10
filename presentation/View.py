@@ -41,8 +41,13 @@ class View:
     def start(cls) -> None:
         cls.initialize()
         print("Select database:\n")
-        list_of_options = list(cls.DB_OPTIONS.keys())
-        idx = select(list_of_options,deselected_prefix="   ",selected_prefix=" \033[92m>\033[0m ")
+        list_of_options = list(cls.DB_OPTIONS.keys()) + ['\033[0m'] # This last selectino is a caption used to reset style
+        idx = select(
+            options=list_of_options,
+            caption_indices=[len(list_of_options) - 1],
+            deselected_prefix="\033[0m   ",
+            selected_prefix=" \033[92m>\033[7m\033[0m \033[7m" # 92 = green, 7 = reverse
+            )
         selected_option = list_of_options[idx]
         selected_database = cls.DB_OPTIONS[selected_option]
         command = ConnectionCommand(selected_database)
