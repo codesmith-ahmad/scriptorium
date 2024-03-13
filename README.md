@@ -4,7 +4,7 @@
 
 Here begins the creation of a new database CLI manager for my files. Successor of "OMNIRECORDS" (name passed to the actual database) which was originally written in PowerShell.
 
-### **Architecture**: [Three-tier](https://en.wikipedia.org/wiki/Multitier_architecture#Three-tier_architecture])
+### **Architecture**: ~~Three-tier~~ 4-Layer (See proposal)
 
 #### Responsabilities
 
