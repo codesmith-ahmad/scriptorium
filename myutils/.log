@@ -1,5 +1,0 @@
-2024-03-12 09:22:25 [View.py:31] Intializing View (loading settings)
-2024-03-12 09:22:25 [View.py:66] loading banner
-2024-03-12 09:22:25 [View.py:73] loading menu
-2024-03-12 09:22:31 [SQLiteOperator.py:20] Connecting to D:/OneDrive/DATA/omnirecords.db...
-2024-03-12 09:22:31 [View.py:139] Success! Connected to SQLite version 3.43.1
