@@ -1,15 +1,80 @@
 import sqlite3
 from sqlite3 import Row
+from enum import Enum
 
-# sqlite3.register_adapter...
+# sqlite3.register_adapter... #TODO put that in separate file
 
+class SQL:
+    
+    class Operation(Enum):
+        SELECT = "SELECT"
+        INSERT = "INSERT"
+        UPDATE = "UPDATE"
+        DELETE = "DELETE"
+        
+    def __init___(self,
+        operation: str, # required regardless of op
+        table: str,     # required regardless of op
+        columns: list = [],
+        # TODO if len = 0, then replace by '*' IFF SELECT, by '' IFF INSERT, error if UPDATE, irrelevant for DELETE
+        # TODO required for UPDATE
+        # TODO special case for INSERT and DELETE        
+        values: list[tuple] = [],
+        # TODO required for UPDATE as a list of singular tuple of size 1
+        # TODO required for INSERT
+        conditions: list[str] = None,  # WHERE, optional
+        order: str = None     # ORDER BY, optional
+        ):
+            self.operation = operation,
+            self.table = table,
+            self.columns = columns,
+            self.values = values,
+            self.conditions = conditions,
+            self.order = order
+            
+            self.__query = None
+    
+    def build_sql(self) -> int:
+        #TODO USE DATA ABOVE TO CONSTRUCT QUERY BASED ON OPERATION TYPE
+        pseudo = """
+        if self.operation.upper() any of the Operatio enum, op = self.operation, 
+        return 0 if successful,
+        return 1 if not
+        """
+    
+    def __str__(self):
+        if self.__query is None:
+            self.query = self.build_sql()
+        return self.__query
+
+class Result:
+    def __init__(self,
+        error = ValueError("Empty Result"),
+        version: str = None,      # to test CONNECT # TODO consider sqlcipher??????
+        rows: list[Row] = None,   # to test SELECT
+        lastrowid: int = None,    # to test INSERT
+        rowcount: int = None,     # to test UPDATE
+        tablecount: dict[str,int] # to test DELETE
+        = {"before": None, "after": None}, 
+        query: SQL = None
+        ):
+            self.error = error,
+            self.version = version,
+            self.rows = rows,
+            self.lastrowid = lastrowid,
+            self.rowcount = rowcount
+            self.query = query
+    
 class Database:
+    # TODO add password for authentification
+    # TODO combine all db ops into one function: execute(sql)
+    # TODO create function: build_sql() -> SQL which creates an sql query object
     
     source: str = None
     con: Connection = None
     
     @classmethod # NOT STATIC
-    def connect(cls,database: str) -> None:
+    def connect(cls,database: str) -> None: #TODO CHANGE TO connect(source,password)
         cls.config_sqlite3()
         cls.source = database
         cls.con = sqlite3.connect(
@@ -17,6 +82,29 @@ class Database:
             detect_types=sqlite3.PARSE_DECLTYPES)
         cls.con.row_factory = sqlite3.Row # will now return Rows instead of tuples.
         # info
+    
+    @classmethod
+    def execute(cls,sql: SQL) -> Result:
+        """Executes SQL query"""
+        try:
+            r = Result()
+            code = sql.build_sql()
+            if successful, sql.__str
+            c = cls.con.execute(sql.__)
+            if query[0:6].lower() == 'select':
+                result = self.cursor.fetchall()
+                self.conn.close()
+                return result
+        except SQLException as e:
+            Result.error = e
+        except Error as e:
+            Result.error = e
+        finally:
+            return r
+        
+    def has_error(self) -> bool:
+        """Check if the result contains an error."""
+        return self.error is not None
     
     @classmethod
     def close(cls):
